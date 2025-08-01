@@ -60,7 +60,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
          
      
           return res.status(201).json(
-             new ApiResponse(200, createdUser, "Admin registered successfully")
+             new ApiResponse(200, createdAdmin, "Admin registered successfully")
           )
 })
 
@@ -166,7 +166,7 @@ const refreshAccessToken = asyncHandler(async(req,res) =>{
          secure: true
       }
    
-      const {accessToken, newRefreshToken}= await generateAccessAndRefereshTokens(user._id)
+      const {accessToken, newRefreshToken}= await generateAccessAndRefereshTokens(admin._id)
     
       return res
       .status(200)
@@ -205,7 +205,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 
    return res
    .status(200)
-   .json(new ApiResponse(200, user, "account details updated successfully"))
+   .json(new ApiResponse(200, admin, "account details updated successfully"))
 
 })
 
