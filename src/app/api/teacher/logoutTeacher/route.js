@@ -1,9 +1,9 @@
 import {Teacher} from '@/src/model/teacher'
-import {dbConnect} from '@/src/lib/dbConnect'
+import {connectDB} from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
 
 export async function POST(request) {
-await dbConnect()
+await connectDB()
 
 try {
     

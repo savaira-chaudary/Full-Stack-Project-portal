@@ -1,15 +1,15 @@
-import {Admin} from '@/src/model/admin'
-import {dbConnect} from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import Admin from '@/src/model/admin'
+import connectDB from '@/src/lib/dbConnect'
+import { NextResponse } from 'next/server';
 
 export async function POST(request) {
-await dbConnect()
+await connectDB()
 
 try {
     
      const { email, password } = await request.json();
         if (!email || !password) {
-            return ApiResponse.json({
+            return NextResponse.json({
                 success: false,
                 message: "Please provide both email and password"
             }, { status: 400 });
@@ -17,19 +17,19 @@ try {
 
         const admin = await Admin.findOne({ email });
         if (!admin) {
-            return ApiResponse.json({
+            return NextResponse.json({
                 success: false,
                 message: "Invalid email or password"
             }, { status: 401 });
         }
         const isMatch = await admin.isPasswordCorrect(password);
         if (!isMatch) {
-            return ApiResponse.json({
+            return NextResponse.json({
                 success: false,
                 message: "Invalid email or password"
             }, { status: 401 });
         }
-        const response = ApiResponse.json({
+        const response = NextResponse.json({
             success: true,
             message: "Admin logged out successfully"
         });
@@ -39,7 +39,7 @@ try {
 
         return response;
         } catch (error) {
-        return ApiResponse.json({
+        return NextResponse.json({
             success: false,
             message: "Something went wrong during logout",
             error: error.message

@@ -1,15 +1,15 @@
-import {Admin} from '@/src/model/admin'
-import {dbConnect} from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import Admin from '@/src/model/admin'
+import connectDB from '@/src/lib/dbConnect'
+import { NextResponse } from 'next/server';
 
 export async function PATCH(request) {
     
-await dbConnect()
+await connectDB()
   
 try {
     const { email, fullName } = await request.json();
             if (!email || !fullName) {
-                return ApiResponse.json({
+                return NextResponse.json({
                     success: false,
                     message: "Please provide both email and password"
                 }, { status: 400 });
@@ -17,7 +17,7 @@ try {
     
         const admin = await Admin.findOne({ email });
         if (!admin) {
-            return ApiResponse.json({
+            return NextResponse.json({
                 success: false,
                 message: "Admin not found"
             }, { status: 404 });
@@ -26,7 +26,7 @@ try {
         admin.fullName = fullName;
         await admin.save();
     
-        return ApiResponse.json({
+        return NextResponse.json({
             success: true,
             message: "Admin details updated successfully",
             data: {
@@ -35,7 +35,7 @@ try {
             }
         }, { status: 200 });
 } catch (error) {
-    return ApiResponse.json({
+    return NextResponse.json({
         success: false,
         message: "An error occurred while updating admin details",
         error: error.message

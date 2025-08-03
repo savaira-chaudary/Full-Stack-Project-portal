@@ -1,10 +1,10 @@
-import {Admin} from '@/src/model/admin'
-import {dbConnect} from '@/src/lib/dbConnect'
+import Admin from '@/src/model/admin'
+import connectDB from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
 
 export async function DELETE(request) {
     
-    await dbConnect()
+    await connectDB()
    try {
     const {password} = await request.json()
     if (!password) {

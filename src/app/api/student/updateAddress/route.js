@@ -1,10 +1,10 @@
-import {Student} from '@/src/model/student'
-import {dbConnect} from '@/src/lib/dbConnect'
+import Student from '@/src/model/student'
+import connectDB from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
 
 export async function PATCH(request) {
     
-    await dbConnect()
+    await connectDB()
 
     try {
         const {password, email} = await request.json()

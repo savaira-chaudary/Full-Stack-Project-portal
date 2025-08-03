@@ -1,10 +1,10 @@
-import {Student} from '@/src/model/student'
-import {dbConnect} from '@/src/lib/dbConnect'
+import Student from '@/src/model/student'
+import connectDB from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
 
 export async function POST(request) {
     
-    await dbConnect()
+    await connectDB()
 
     try {
         const { email, password, name } = await request.json();
