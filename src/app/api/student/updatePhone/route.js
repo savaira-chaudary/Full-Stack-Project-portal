@@ -1,4 +1,4 @@
-import {Teacher} from '@/src/model/teacher'
+import {Student} from '@/src/model/student'
 import {dbConnect} from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
 
@@ -9,25 +9,25 @@ export async function PATCH(request) {
     try {
         const {password, email} = await request.json()
         if (!password || !email) {
-            return ApiResponse(400, { message: "password/email is required"})
+            return ApiResponse(400, { message: "password and email is required"})
         }
 
-        const teacherId = request.teacher?._id;
-        if (!teacherId) {
+        const studentId = request.student?._id;
+        if (!studentId) {
             return ApiResponse(401, { message: 'Unauthorized.' });
         }
 
-         const updatedTeacher = await Teacher.findByIdAndUpdate(
-            teacherId,
-            { address },
+         const updatedStudent = await Student.findByIdAndUpdate(
+            studentId,
+            { phone },
             { new: true }
         );
 
-        if (!updatedTeacher) {
-            return ApiResponse(404, { message: 'Teacher not found.' });
+        if (!updatedStudent) {
+            return ApiResponse(404, { message: 'Student not found.' });
         }
 
-        return ApiResponse(200, { message: 'Address updated.', teacher: updatedTeacher });
+        return ApiResponse(200, { message: 'Phone updated.', student: updatedStudent });
 
     } catch (error) {
         return ApiResponse(500, { message: 'Server error.', error: error.message });

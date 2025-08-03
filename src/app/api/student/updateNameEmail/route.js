@@ -1,4 +1,4 @@
-import {Teacher} from '@/src/model/teacher'
+import {Student} from '@/src/model/student'
 import {dbConnect} from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
 
@@ -15,20 +15,20 @@ try {
                 }, { status: 400 });
             }
     
-        const teacher = await Teacher.findOne({ email });
-        if (!teacher) {
+        const student = await Student.findOne({ email });
+        if (!student) {
             return ApiResponse.json({
                 success: false,
-                message: "Teacher not found"
+                message: "Student not found"
             }, { status: 404 });
         }
     
-        teacher.fullName = fullName;
-        await teacher.save();
+        student.fullName = fullName;
+        await student.save();
     
         return ApiResponse.json({
             success: true,
-            message: "Teacher details updated successfully",
+            message: "Student details updated successfully",
             data: {
                 email: admin.email,
                 fullName: admin.fullName
@@ -37,7 +37,7 @@ try {
 } catch (error) {
     return ApiResponse.json({
         success: false,
-        message: "An error occurred while updating Teacher details",
+        message: "An error occurred while updating Student details",
         error: error.message
     }, { status: 500 });
 }

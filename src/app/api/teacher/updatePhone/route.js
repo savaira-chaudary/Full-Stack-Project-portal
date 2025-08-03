@@ -9,10 +9,10 @@ export async function PATCH(request) {
     try {
         const {password, email} = await request.json()
         if (!password || !email) {
-            return ApiResponse(400, { message: "password/email is required"})
+            return ApiResponse(400, { message: "password and email is required"})
         }
 
-        const teacherId = request.Teacher?._id;
+        const teacherId = request.teacher?._id;
         if (!teacherId) {
             return ApiResponse(401, { message: 'Unauthorized.' });
         }
