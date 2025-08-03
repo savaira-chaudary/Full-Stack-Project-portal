@@ -1,7 +1,6 @@
 import {Admin} from '@/src/model/admin'
 import {dbConnect} from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
-import bcrypt from 'bcryptjs';
 
 export async function POST(request) {
      await dbConnect()
@@ -23,19 +22,12 @@ export async function POST(request) {
             }, { status: 401 });
         }
 
-        const isMatch = await admin.comparePassword(password);
+        const isMatch = await admin.isPasswordCorrect(password);
         if (!isMatch) {
             return ApiResponse.json({
                 success: false,
                 message: "Invalid email or password"
             }, { status: 401 });
-        }
-        
-        // Example: re-hash password if needed (not usually done at login, but for demonstration)
-        if (!admin.password.startsWith('$2a$')) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            admin.password = hashedPassword;
-            await admin.save();
         }
 
         return ApiResponse.json({

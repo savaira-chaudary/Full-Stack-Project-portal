@@ -1,4 +1,4 @@
-import {Admin} from '@/src/model/admin'
+import {Teacher} from '@/src/model/teacher'
 import {dbConnect} from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
 
@@ -15,8 +15,8 @@ try {
             }, { status: 400 });
         }
 
-        const admin = await Admin.findOne({ email });
-        if (!admin) {
+        const teacher = await Teacher.findOne({ email });
+        if (!teacher) {
             return ApiResponse.json({
                 success: false,
                 message: "Invalid email or password"
@@ -31,7 +31,7 @@ try {
         }
         const response = ApiResponse.json({
             success: true,
-            message: "Admin logged out successfully"
+            message: "Teacher logged out successfully"
         });
 
         // Remove the admin session cookie

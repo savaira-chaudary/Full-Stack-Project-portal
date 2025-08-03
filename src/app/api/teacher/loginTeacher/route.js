@@ -1,13 +1,12 @@
-import {Admin} from '@/src/model/admin'
+import {Teacher} from '@/src/model/teacher'
 import {dbConnect} from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
 
 export async function POST(request) {
-await dbConnect()
+     await dbConnect()
 
-try {
-    
-     const { email, password } = await request.json();
+    try {
+        const { email, password } = await request.json();
         if (!email || !password) {
             return ApiResponse.json({
                 success: false,
@@ -15,13 +14,14 @@ try {
             }, { status: 400 });
         }
 
-        const admin = await Admin.findOne({ email });
-        if (!admin) {
+        const teacher = await Teacher.findOne({ email });
+        if (!teacher) {
             return ApiResponse.json({
                 success: false,
                 message: "Invalid email or password"
             }, { status: 401 });
         }
+
         const isMatch = await admin.isPasswordCorrect(password);
         if (!isMatch) {
             return ApiResponse.json({
@@ -29,20 +29,23 @@ try {
                 message: "Invalid email or password"
             }, { status: 401 });
         }
-        const response = ApiResponse.json({
+        
+        return ApiResponse.json({
             success: true,
-            message: "Admin logged out successfully"
-        });
+            message: "Login successful",
+            teacher: {
+                id: teacher._id,
+                email: teacher.email,
+                name: teacher.name
+            }
+        }, { status: 200 });
 
-        // Remove the admin session cookie
-        response.headers.set('Set-Cookie', 'adminToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Strict');
-
-        return response;
-        } catch (error) {
+    } catch (error) {
         return ApiResponse.json({
             success: false,
-            message: "Something went wrong during logout",
+            message: "Something went wrong",
             error: error.message
         }, { status: 500 });
-        }
-} 
+    }
+}
+
