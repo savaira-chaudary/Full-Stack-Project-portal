@@ -1,34 +1,48 @@
-import Student from '@/src/model/student'
+import Student from '@/src/model/student.model.js'
 import connectDB from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import { NextResponse } from 'next/server'
 
 export async function PATCH(request) {
-    
     await connectDB()
 
     try {
-        const { profilePicture } = await request.json();
-        if (!profilePicture) {
-            return ApiResponse(400, { message: "profile picture required" });
+        const { profilePicture , rollno } = await request.json()
+        if (!profilePicture || !rollno) {
+            return NextResponse.json(
+                { success: false, message: 'Profile picture and rollno is required.' },
+                { status: 400 }
+            )
         }
 
-        const studentId = request.student?._id;
-        if (!studentId) {
-            return ApiResponse(401, { message: 'Unauthorized.' });
+       const student = await Student.findOne({ rollno });
+        if (!student) {
+            return NextResponse.json({
+                success: false,
+                message: "student not found"
+            }, { status: 404 });
         }
 
-        const updatedStudent = await Student.findByIdAndUpdate(
-            studentId,
-            { profilePicture },
-            { new: true }
-        );
+    const updatedStudent = await Student.findOneAndUpdate(
+      student,
+      { profilePicture },
+      { new: true }
+    );
 
-        if (!updatedStudent) {
-            return ApiResponse(404, { message: 'Student not found.' });
-        }
+    if (!updatedStudent) {
+      return NextResponse.json(
+        { success: false, message: 'Student not found.' },
+        { status: 404 }
+      );
+    }
 
-        return ApiResponse(200, { message: 'Profile picture updated.', student: updatedStudent });
+        return NextResponse.json(
+            { success: true, message: 'Profile picture updated.', student: updatedStudent },
+            { status: 200 }
+        )
     } catch (error) {
-        return ApiResponse(500, { message: 'Server error.', error: error.message });
+        return NextResponse.json(
+            { success: false, message: 'Server error.', error: error.message },
+            { status: 500 }
+        )
     }
 }

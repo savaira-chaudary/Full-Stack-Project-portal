@@ -1,35 +1,49 @@
-import Student from '@/src/model/student'
+import Student from '@/src/model/student.model.js'
 import connectDB from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import { NextResponse } from 'next/server'
 
 export async function PATCH(request) {
-    
     await connectDB()
 
     try {
-        const {password, email} = await request.json()
-        if (!password || !email) {
-            return ApiResponse(400, { message: "password and email is required"})
+        const { password, rollno , phone} = await request.json()
+        if (!password || !rollno || !phone) {
+            return NextResponse.json(
+                { message: "password and rollno and phone is required" },
+                { status: 400 }
+            )
         }
 
-        const studentId = request.student?._id;
-        if (!studentId) {
-            return ApiResponse(401, { message: 'Unauthorized.' });
+       const student = await Student.findOne({ rollno });
+        if (!student) {
+            return NextResponse.json({
+                success: false,
+                message: "Invalid rollno"
+            }, { status: 401 });
         }
 
-         const updatedStudent = await Student.findByIdAndUpdate(
-            studentId,
+        const updatedStudent = await Student.findOneAndUpdate(
+            student,
             { phone },
             { new: true }
         );
 
         if (!updatedStudent) {
-            return ApiResponse(404, { message: 'Student not found.' });
+            return NextResponse.json(
+                { success: false, message: "Student not found." },
+                { status: 404 }
+            );
         }
 
-        return ApiResponse(200, { message: 'Phone updated.', student: updatedStudent });
+        return NextResponse.json(
+            { message: 'Phone updated.', student: updatedStudent },
+            { status: 200 }
+        )
 
     } catch (error) {
-        return ApiResponse(500, { message: 'Server error.', error: error.message });
+        return NextResponse.json(
+            { message: 'Server error.', error: error.message },
+            { status: 500 }
+        )
     }
 }

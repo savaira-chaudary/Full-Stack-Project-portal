@@ -23,7 +23,7 @@ try {
             }, { status: 404 });
         }
      
-        const updatedAdmin = await Admin.findByIdAndUpdate(
+        const updatedAdmin = await Admin.findOneAndUpdate(
               admin,
               { email },
               { fullName},

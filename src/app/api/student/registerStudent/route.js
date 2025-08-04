@@ -1,34 +1,55 @@
-import Student from '@/src/model/student'
+import Student from '@/src/model/student.model.js'
 import connectDB from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import { NextResponse } from 'next/server'
 
 export async function POST(request) {
-    
-    await connectDB()
+    await connectDB();
 
     try {
-        const { email, password, name } = await request.json();
+        const { email, password, username ,rollno, address, phone} = await request.json();
 
-        if (!email || !password || !name) {
-            return ApiResponse({ status: 400, message: 'All fields are required.' });
+        if (!email || !password || !username || !rollno || !address || !phone) {
+            return NextResponse.json(
+                { success: false, message: 'All fields are required.' },
+                { status: 400 }
+            );
         }
 
         const existingStudent = await Student.findOne({ email });
         if (existingStudent) {
-            return ApiResponse({ status: 409, message: 'Student already exists.' });
+            return NextResponse.json(
+                { success: false, message: 'Student already exists.' },
+                { status: 409 }
+            );
         }
 
-        const newStudent = new Student({ email, password, name });
+        const newStudent = new Student({ email, password, username , rollno, address, phone});
         await newStudent.save();
 
-        return ApiResponse({ status: 201, 
-            message: 'Student registered successfully.', data: { id: newStudent._id, email, name } });
+        return NextResponse.json(
+            {
+                success: true,
+                message: 'Student registered successfully.',
+                data: {
+                    id: newStudent._id,
+                    email: newStudent.email,
+                    username: newStudent.username,
+                    rollno: newStudent.rollno,
+                    address: newStudent.address,
+                    phone: newStudent.phone
+                }
+            },
+            { status: 201 }
+        );
 
     } catch (error) {
-        return ApiResponse.json({
-            success: false,
-            message: "Something went wrong while registeration",
-            error: error.message
-        }, { status: 500 });
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Something went wrong while registration.",
+                error: error.message
+            },
+            { status: 500 }
+        );
     }
 }

@@ -1,28 +1,44 @@
-import Student from '@/src/model/student'
+import Student from '@/src/model/student.model.js'
 import connectDB from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import { NextResponse } from 'next/server'
 
 export async function DELETE(request) {
-    
     await connectDB()
-   try {
-    const {password} = await request.json()
-    if (!password) {
-            return ApiResponse(400, { message: 'Password is required.' });
+
+    try {
+        const { password ,rollno } = await request.json()
+
+        if (!password || !rollno) {
+            return NextResponse.json(
+                { success: false, message: 'Password and rollno is required.' },
+                { status: 400 }
+            )
         }
 
-        const studentId  = request.student?._id;
-        if (!studentId) {
-            return ApiResponse(400, { message: 'Student ID is required.' });
+       const student = await Student.findOne({ rollno });
+        if (!student) {
+            return NextResponse.json(
+                { success: false, message: 'Student not found.' },
+                { status: 404 }
+            );
         }
 
-        const deleteStudent = await Student.findByIdAndDelete(studentId);
-        if (!deleteStudent) {
-            return ApiResponse(404, { message: 'Student not found.' });
+        const deletedStudent = await Student.findOneAndDelete({ rollno });
+        if (!deletedStudent) {
+            return NextResponse.json(
+                { success: false, message: 'Failed to delete Student.' },
+                { status: 404 }
+            );
         }
 
-        return ApiResponse(200, { message: 'Student deleted successfully.' });
-   } catch (error) {
-    return ApiResponse(500, { message: 'Failed to delete Student.', error: error.message });
-   }
+        return NextResponse.json(
+            { success: true, message: 'Student deleted successfully.' },
+            { status: 200 }
+        )
+    } catch (error) {
+        return NextResponse.json(
+            { success: false, message: 'Failed to delete student.', error: error.message },
+            { status: 500 }
+        )
+    }
 }

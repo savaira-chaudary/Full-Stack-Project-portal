@@ -22,7 +22,7 @@ export async function POST(request) {
             }, { status: 401 });
         }
 
-        const isMatch = await admin.isPasswordCorrect(password);
+        const isMatch = await Admin.findOne({password});
         if (!isMatch) {
             return NextResponse.json({
                 success: false,
