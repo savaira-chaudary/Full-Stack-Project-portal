@@ -1,32 +1,42 @@
-import Teacher from '@/src/model/teacher'
+import { NextResponse } from 'next/server'
+import Teacher from '@/src/model/teacher.model.js'
 import connectDB from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
 
 export async function PATCH(request) {
-    
     await connectDB()
 
     try {
-        const {password} = await request.json()
-        if (!password) {
-            return ApiResponse({ status: 400, message: 'Password is required' })
+        const { password , teacherId } = await request.json()
+        if (!password || !teacherId) {
+            return NextResponse.json({ message: 'Password is required' }, { status: 400 })
         }
 
-        const teacherId = request.Teacher?._id
-        if (!teacherId) {
-            return ApiResponse({ status: 401, message: 'Unauthorized' })
-        }
-
-        const teacher = await Teacher.findById(teacherId)
-        if (!teacher) {
-            return ApiResponse({ status: 404, message: 'Teacher not found' })
-        }
+                const teacher = await Teacher.findOne({ teacherId });
+                if (!teacher) {
+                    return NextResponse.json({
+                        success: false,
+                        message: "Invalid TeacherId"
+                    }, { status: 401 });
+                }
+        
+                const updatedTeacher = await Teacher.findOneAndUpdate(
+                    teacher,
+                    { password },
+                    { new: true }
+                );
+        
+                if (!updatedTeacher) {
+                    return NextResponse.json(
+                        { success: false, message: "Teacher not found." },
+                        { status: 404 }
+                    );
+                }
 
         teacher.password = password
         await teacher.save()
 
-        return ApiResponse({ status: 200, message: 'Password updated successfully' })
+        return NextResponse.json({ message: 'Password updated successfully' }, { status: 200 })
     } catch (error) {
-        return ApiResponse({ status: 500, message: 'Internal server error', error: error.message })
+        return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 })
     }
 }

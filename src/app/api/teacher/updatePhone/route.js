@@ -1,35 +1,48 @@
-import Teacher from '@/src/model/teacher'
-import connectDB from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import { NextResponse } from 'next/server';
+import Teacher from '@/src/model/teacher.model.js';
+import connectDB from '@/src/lib/dbConnect';
 
 export async function PATCH(request) {
-    
-    await connectDB()
+    await connectDB();
 
     try {
-        const {password, email} = await request.json()
-        if (!password || !email) {
-            return ApiResponse(400, { message: "password and email is required"})
+        const { password, teacherId , phone } = await request.json();
+
+        if (!password || !teacherId) {
+            return NextResponse.json(
+                { message: "Password and Id are required." },
+                { status: 400 }
+            );
+        }
+         const teacher = await Teacher.findOne({ teacherId });
+                if (!teacher) {
+                    return NextResponse.json({
+                        success: false,
+                        message: "Invalid ID"
+                    }, { status: 401 });
+                }
+
+         const updatedTeacher = await Teacher.findOneAndUpdate(
+                    teacher,
+                    { phone },
+                    { new: true }
+                );
+        if (!updatedTeacher) {
+            return NextResponse.json(
+                { message: 'Teacher not found.' },
+                { status: 404 }
+            );
         }
 
-        const teacherId = request.teacher?._id;
-        if (!teacherId) {
-            return ApiResponse(401, { message: 'Unauthorized.' });
-        }
-
-         const updatedTeacher = await Teacher.findByIdAndUpdate(
-            teacherId,
-            { phone },
-            { new: true }
+        return NextResponse.json(
+            { message: 'Phone updated.', teacher: updatedTeacher },
+            { status: 200 }
         );
 
-        if (!updatedTeacher) {
-            return ApiResponse(404, { message: 'Teacher not found.' });
-        }
-
-        return ApiResponse(200, { message: 'Phone updated.', teacher: updatedTeacher });
-
     } catch (error) {
-        return ApiResponse(500, { message: 'Server error.', error: error.message });
+        return NextResponse.json(
+            { message: 'Server error.', error: error.message },
+            { status: 500 }
+        );
     }
 }

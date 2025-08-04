@@ -1,34 +1,48 @@
-import Teacher from '@/src/model/teacher'
-import connectDB from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import Teacher from '@/src/model/teacher.model.js';
+import connectDB from '@/src/lib/dbConnect';
+import { NextResponse } from 'next/server';
 
 export async function POST(request) {
-    
-    await connectDB()
+    await connectDB();
 
     try {
-        const { email, password, name } = await request.json();
+        const { email, password, fullName, phone, address, subjectSpecialization, qualification , teacherId} = await request.json();
 
-        if (!email || !password || !name) {
-            return ApiResponse({ status: 400, message: 'All fields are required.' });
+        if (!email || !password || !fullName) {
+            return NextResponse.json(
+                { success: false, message: 'All fields are required.' },
+                { status: 400 }
+            );
         }
 
-        const existingTeacher = await Teacher.findOne({ email });
+        const existingTeacher = await Teacher.findOne({ teacherId });
         if (existingTeacher) {
-            return ApiResponse({ status: 409, message: 'Teacher already exists.' });
+            return NextResponse.json(
+                { success: false, message: 'Teacher already exists.' },
+                { status: 409 }
+            );
         }
 
-        const newTeacher = new Teacher({ email, password, name });
+        const newTeacher = new Teacher({ email, password, fullName ,phone,address,subjectSpecialization,qualification,teacherId});
         await newTeacher.save();
 
-        return ApiResponse({ status: 201, 
-            message: 'Teacher registered successfully.', data: { id: newTeacher._id, email, name } });
+        return NextResponse.json(
+            {
+                success: true,
+                message: 'Teacher registered successfully.',
+                data: { id: newTeacher._id, email, fullName ,phone,address,subjectSpecialization,qualification,teacherId}
+            },
+            { status: 201 }
+        );
 
     } catch (error) {
-        return ApiResponse.json({
-            success: false,
-            message: "Something went wrong while registeration",
-            error: error.message
-        }, { status: 500 });
+        return NextResponse.json(
+            {
+                success: false,
+                message: 'Something went wrong while registration',
+                error: error.message
+            },
+            { status: 500 }
+        );
     }
 }

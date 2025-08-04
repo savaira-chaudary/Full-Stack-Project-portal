@@ -1,34 +1,51 @@
-import Teacher from '@/src/model/teacher'
-import connectDB from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import { NextResponse } from 'next/server';
+import Teacher from '@/src/model/teacher.model.js';
+import connectDB from '@/src/lib/dbConnect';
 
 export async function PATCH(request) {
-    
-    await connectDB()
+    await connectDB();
 
     try {
-        const { profilePicture } = await request.json();
-        if (!profilePicture) {
-            return ApiResponse(400, { message: "profile picture required" });
+        const { profilePicture , teacherId} = await request.json();
+
+        if (!profilePicture || !teacherId) {
+            return NextResponse.json(
+                { message: "Profile picture required." },
+                { status: 400 }
+            );
         }
 
-        const teacherId = request.teacher?._id;
-        if (!teacherId) {
-            return ApiResponse(401, { message: 'Unauthorized.' });
-        }
+       const teacher = await Teacher.findOne({ teacherId });
+              if (!teacher) {
+                  return NextResponse.json({
+                      success: false,
+                      message: "TeacherId not found"
+                  }, { status: 404 });
+              }
+      
 
-        const updatedTeacher = await Teacher.findByIdAndUpdate(
-            teacherId,
-            { profilePicture },
-            { new: true }
-        );
+        const updatedTeacher = await Teacher.findOneAndUpdate(
+             teacher,
+             { profilePicture },
+             { new: true }
+           );
 
         if (!updatedTeacher) {
-            return ApiResponse(404, { message: 'Teacher not found.' });
+            return NextResponse.json(
+                { message: 'Teacher not found.' },
+                { status: 404 }
+            );
         }
 
-        return ApiResponse(200, { message: 'Profile picture updated.', teacher: updatedTeacher });
+        return NextResponse.json(
+            { message: 'Profile picture updated.', teacher: updatedTeacher },
+            { status: 200 }
+        );
+
     } catch (error) {
-        return ApiResponse(500, { message: 'Server error.', error: error.message });
+        return NextResponse.json(
+            { message: 'Server error.', error: error.message },
+            { status: 500 }
+        );
     }
 }
