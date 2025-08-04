@@ -1,28 +1,44 @@
-import Admin from '@/src/model/admin'
+import Admin from '@/src/model/admin.model.js'
 import connectDB from '@/src/lib/dbConnect'
-import {ApiResponse} from '@/src/utils/ApiResponse'
+import { NextResponse } from 'next/server';
 
 export async function DELETE(request) {
+    await connectDB();
     
-    await connectDB()
-   try {
-    const {password} = await request.json()
-    if (!password) {
-            return ApiResponse(400, { message: 'Password is required.' });
+    try {
+        const { password, email } = await request.json();
+
+        if (!password || !email) {
+            return NextResponse.json(
+                { success: false, message: 'Password and email are required.' },
+                { status: 400 }
+            );
         }
 
-        const adminId  = request.admin?._id;
-        if (!adminId) {
-            return ApiResponse(400, { message: 'Admin ID is required.' });
+        const admin = await Admin.findOne({ email });
+        if (!admin) {
+            return NextResponse.json(
+                { success: false, message: 'Admin not found.' },
+                { status: 404 }
+            );
         }
 
-        const deletedAdmin = await Admin.findByIdAndDelete(adminId);
+        const deletedAdmin = await Admin.findOneAndDelete({ email });
         if (!deletedAdmin) {
-            return ApiResponse(404, { message: 'Admin not found.' });
+            return NextResponse.json(
+                { success: false, message: 'Failed to delete admin.' },
+                { status: 404 }
+            );
         }
 
-        return ApiResponse(200, { message: 'Admin deleted successfully.' });
-   } catch (error) {
-    return ApiResponse(500, { message: 'Failed to delete admin.', error: error.message });
-   }
+        return NextResponse.json(
+            { success: true, message: 'Admin deleted successfully.' },
+            { status: 200 }
+        );
+    } catch (error) {
+        return NextResponse.json(
+            { success: false, message: 'Failed to delete admin.', error: error.message },
+            { status: 500 }
+        );
+    }
 }

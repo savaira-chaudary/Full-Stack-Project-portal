@@ -1,4 +1,4 @@
-import Admin from '@/src/model/admin'
+import Admin from '@/src/model/admin.model.js'
 import connectDB from '@/src/lib/dbConnect'
 import { NextResponse } from 'next/server';
 

@@ -1,5 +1,5 @@
-import {Teacher} from '@/src/model/teacher'
-import {connectDB} from '@/src/lib/dbConnect'
+import Teacher from '@/src/model/teacher'
+import connectDB from '@/src/lib/dbConnect'
 import {ApiResponse} from '@/src/utils/ApiResponse'
 
 export async function PATCH(request) {

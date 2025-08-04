@@ -1,4 +1,4 @@
-import Admin from '@/src/model/admin'
+import Admin from '@/src/model/admin.model.js'
 import connectDB from '@/src/lib/dbConnect'
 import { NextResponse } from 'next/server';
 
@@ -22,8 +22,23 @@ try {
                 message: "Admin not found"
             }, { status: 404 });
         }
-    
+     
+        const updatedAdmin = await Admin.findByIdAndUpdate(
+              admin,
+              { email },
+              { fullName},
+              { new: true }
+            );
+        
+            if (!updatedAdmin) {
+              return NextResponse.json(
+                { success: false, message: 'Admin not found.' },
+                { status: 404 }
+              );
+            }
+
         admin.fullName = fullName;
+        admin.email = email
         await admin.save();
     
         return NextResponse.json({

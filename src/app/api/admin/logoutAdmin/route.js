@@ -1,4 +1,4 @@
-import Admin from '@/src/model/admin'
+import Admin from '@/src/model/admin.model.js'
 import connectDB from '@/src/lib/dbConnect'
 import { NextResponse } from 'next/server';
 
@@ -33,9 +33,6 @@ try {
             success: true,
             message: "Admin logged out successfully"
         });
-
-        // Remove the admin session cookie
-        response.headers.set('Set-Cookie', 'adminToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Strict');
 
         return response;
         } catch (error) {
