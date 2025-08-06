@@ -22,13 +22,10 @@ try {
                 message: "Invalid email or password"
             }, { status: 401 });
         }
-        const isMatch = await Admin.findOne({password});
-        if (!isMatch) {
-            return NextResponse.json({
-                success: false,
-                message: "Invalid email or password"
-            }, { status: 401 });
-        }
+    // Clear all admin sessions on logout by emptying the sessions array
+    admin.sessions = [];
+    await admin.save();
+
         const response = NextResponse.json({
             success: true,
             message: "Admin logged out successfully"

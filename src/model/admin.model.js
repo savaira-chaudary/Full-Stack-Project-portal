@@ -3,31 +3,43 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
 
 const adminSchema = new Schema({
-fullName: {
-         type: String, 
-         required: true, 
+    fullName: {
+        type: String, 
+        required: true, 
     },
-email:    { 
-    type: String, 
-    required: true, 
-    unique: true 
+    email: { 
+        type: String, 
+        required: true, 
+        unique: true 
     },
-password: {
-     type: String,
-     required: true 
+    password: {
+        type: String,
+        required: true 
     },
-role: { 
-    type: String, 
-    default: 'admin' 
+    role: { 
+        type: String, 
+        default: 'admin' 
     },
-profilePicture: { 
-    type: String 
+    profilePicture: { 
+        type: String 
     },
-refreshToken:{
-    type: String,
-}
+    refreshToken: {
+        type: String,
+        // Stores the latest refresh token for the admin (used for session management)
+    },
+    sessions: [
+        {
+            token: { 
+                type: String, 
+                required: true 
+                // This is a refresh token used to manage multiple active sessions for the admin
+            },
+            createdAt: { type: Date, default: Date.now },
+            expiresAt: { type: Date }
+        }
+    ]
 },
-{timestamps: true})
+{ timestamps: true });
 
 adminSchema.pre("save",async function (next) {
     if(!this.isModified("password")) return next();
@@ -65,8 +77,6 @@ adminSchema.methods.generateRefreshToken = function () {
         }
     )
 }
-
-// export default mongoose.model.Admin || mongoose.model('Admin', adminSchema);
 
 const Admin = mongoose.models.Admin || mongoose.model('Admin', adminSchema);
 

@@ -22,13 +22,22 @@ export async function POST(request) {
             }, { status: 401 });
         }
 
-        const isMatch = await Student.findOne({password});
-        if (!isMatch) {
-            return NextResponse.json({
-                success: false,
-                message: "Invalid email or password"
-            }, { status: 401 });
-        }
+       // Generate a new refresh token (use a secure random string)
+        const crypto = await import('crypto');
+        const refreshToken = crypto.randomBytes(40).toString('hex');
+        const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
+        // Add session to student.sessions
+        student.sessions.push({
+            token: refreshToken,
+            createdAt: new Date(),
+            expiresAt
+        });
+
+        // Optionally, update the latest refreshToken field
+        student.refreshToken = refreshToken;
+
+        await student.save();
         
         return NextResponse.json({
             success: true,

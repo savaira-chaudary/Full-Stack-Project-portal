@@ -36,6 +36,21 @@ const teacherSchema = new Schema({
   profilePicture: { 
     type: String 
 },
+ refreshToken: {
+        type: String,
+        // Stores the latest refresh token for the teacher(used for session management)
+    },
+    sessions: [
+        {
+            token: { 
+                type: String, 
+                required: true 
+                // This is a refresh token used to manage multiple active sessions for the teacher
+            },
+            createdAt: { type: Date, default: Date.now },
+            expiresAt: { type: Date }
+        }
+    ]
 
 },{timestamps: true})
 

@@ -40,6 +40,10 @@ export async function POST(request) {
             )
         }
 
+         // Clear all student sessions on logout by emptying the sessions array
+    student.sessions = [];
+    await student.save();
+
         const response = NextResponse.json(
             {
                 success: true,

@@ -4,14 +4,14 @@ import {ApiError} from '../utils/apiError.js'
 import {ApiResponse} from '../utils/apiResponse.js'
 import jwt from 'jsonwebtoken'
 
-const generateAccessAndRefereshTokens = async(userId) =>{
+const generateAccessAndRefereshTokens = async(adminId) =>{
     try {
-        const user = await User.findById(userId)
-        const accessToken = user.generateAccessToken()
-        const refreshToken = user.generateRefreshToken()
+        const admin = await Admin.findById(adminId)
+        const accessToken = admin.generateAccessToken()
+        const refreshToken = admin.generateRefreshToken()
 
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false })
+        admin.refreshToken = refreshToken
+        await admin.save({ validateBeforeSave: false })
 
         return {accessToken, refreshToken}
 

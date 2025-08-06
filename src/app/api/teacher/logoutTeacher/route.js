@@ -40,6 +40,10 @@ export async function POST(request) {
             );
         }
 
+         // Clear all teacher sessions on logout by emptying the sessions array
+    teacher.sessions = [];
+    await teacher.save();
+
         const response = NextResponse.json(
             {
                 success: true,

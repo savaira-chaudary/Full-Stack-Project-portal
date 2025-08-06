@@ -32,7 +32,22 @@ address: {
 gender:   { 
     type: String, 
     enum: ['Male', 'Female'] 
-}
+},
+ refreshToken: {
+        type: String,
+        // Stores the latest refresh token  (used for session management)
+    },
+    sessions: [
+        {
+            token: { 
+                type: String, 
+                required: true 
+                // This is a refresh token used to manage multiple active sessions for the student
+            },
+            createdAt: { type: Date, default: Date.now },
+            expiresAt: { type: Date }
+        }
+    ]
 },
 {timestamps: true})
 

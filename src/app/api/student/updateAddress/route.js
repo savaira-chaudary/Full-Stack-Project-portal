@@ -1,11 +1,31 @@
 import Student from '@/src/model/student.model.js';
 import connectDB from '@/src/lib/dbConnect';
 import { NextResponse } from 'next/server';
+import Admin from '@/src/model/admin.model.js'
 
 export async function PATCH(request) {
     await connectDB();
 
     try {
+        const { email, sessions } = await request.json();
+
+        if (!email || !sessions) {
+            return NextResponse.json(
+                { success: false, message: "Admin email and session are required." },
+                { status: 401 }
+            );
+        }
+
+        const ADMIN_EMAIL = await Admin.findOne({email})
+        const ADMIN_SESSION = await Admin.find({sessions})
+
+        if (email !== ADMIN_EMAIL || sessions !== ADMIN_SESSION) {
+            return NextResponse.json(
+                { success: false, message: "You are unauthorized." },
+                { status: 401 }
+            );
+        }
+        //updating address if authorized
         const { address, rollno } = await request.json();
 
         if (!address || !rollno) {
