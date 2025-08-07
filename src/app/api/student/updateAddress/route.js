@@ -1,31 +1,35 @@
 import Student from '@/src/model/student.model.js';
 import connectDB from '@/src/lib/dbConnect';
 import { NextResponse } from 'next/server';
-import Admin from '@/src/model/admin.model.js'
+import Admin from '@/src/model/admin.model.js';
 
 export async function PATCH(request) {
     await connectDB();
 
     try {
-        const { email, sessions } = await request.json();
+        // Get cookie from request
+        const cookieHeader = request.headers.get('cookie') || '';
+        const tokenMatch = cookieHeader.match(/admin_session=([^;]+)/);
+        const sessionToken = tokenMatch ? tokenMatch[1] : null;
 
-        if (!email || !sessions) {
+        if (!sessionToken) {
             return NextResponse.json(
-                { success: false, message: "Admin email and session are required." },
+                { success: false, message: "Unauthorized: No session token found in cookies." },
                 { status: 401 }
             );
         }
 
-        const ADMIN_EMAIL = await Admin.findOne({email})
-        const ADMIN_SESSION = await Admin.find({sessions})
+        // Find admin with this session token
+        const admin = await Admin.findOne({ 'sessions.token': sessionToken });
 
-        if (email !== ADMIN_EMAIL || sessions !== ADMIN_SESSION) {
+        if (!admin) {
             return NextResponse.json(
-                { success: false, message: "You are unauthorized." },
+                { success: false, message: "Unauthorized: Invalid session." },
                 { status: 401 }
             );
         }
-        //updating address if authorized
+
+        // Get address + rollno from request body
         const { address, rollno } = await request.json();
 
         if (!address || !rollno) {
@@ -35,31 +39,30 @@ export async function PATCH(request) {
             );
         }
 
+        // Find and update student
         const student = await Student.findOne({ rollno });
+
         if (!student) {
             return NextResponse.json({
                 success: false,
-                message: "Invalid rollno"
-            }, { status: 401 });
+                message: "Student not found."
+            }, { status: 404 });
         }
 
         const updatedStudent = await Student.findOneAndUpdate(
-            student,
             { address },
             { new: true }
         );
 
-        if (!updatedStudent) {
-            return NextResponse.json(
-                { success: false, message: "Student not found." },
-                { status: 404 }
-            );
-        }
+       return NextResponse.json(
+    {
+        success: true,
+        message: "Address updated.",
+        updatedAddress: updatedStudent.address
+    },
+    { status: 200 }
+);
 
-        return NextResponse.json(
-            { success: true, message: "Address updated.", student: updatedStudent },
-            { status: 200 }
-        );
 
     } catch (error) {
         return NextResponse.json(

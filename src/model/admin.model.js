@@ -27,7 +27,7 @@ const adminSchema = new Schema({
         type: String,
         // Stores the latest refresh token for the admin (used for session management)
     },
-    sessions: [
+    sessions:[
         {
             token: { 
                 type: String, 

@@ -1,11 +1,35 @@
 import Teacher from '@/src/model/teacher.model.js';
 import connectDB from '@/src/lib/dbConnect';
 import { NextResponse } from 'next/server';
+import Admin from '@/src/model/admin.model.js';
 
 export async function PATCH(request) {
     await connectDB();
 
     try {
+
+          // Get cookie from request
+        const cookieHeader = request.headers.get('cookie') || '';
+        const tokenMatch = cookieHeader.match(/admin_session=([^;]+)/);
+        const sessionToken = tokenMatch ? tokenMatch[1] : null;
+
+        if (!sessionToken) {
+            return NextResponse.json(
+                { success: false, message: "Unauthorized: No session token found in cookies." },
+                { status: 401 }
+            );
+        }
+
+        // Find admin with this session token
+        const admin = await Admin.findOne({ 'sessions.token': sessionToken });
+
+        if (!admin) {
+            return NextResponse.json(
+                { success: false, message: "Unauthorized: Invalid session." },
+                { status: 401 }
+            );
+        }
+
         const { password,  teacherId , address } = await request.json();
 
         if (!password || !teacherId) {
@@ -19,7 +43,7 @@ export async function PATCH(request) {
                if (!teacher) {
                    return NextResponse.json({
                        success: false,
-                       message: "Invalid rollno"
+                       message: "Invalid teacherId"
                    }, { status: 401 });
                }
        
@@ -28,16 +52,9 @@ export async function PATCH(request) {
                    { address },
                    { new: true }
                );
-       
-               if (!updatedTeacher) {
-                   return NextResponse.json(
-                       { success: false, message: "Teacher not found." },
-                       { status: 404 }
-                   );
-               }
 
         return NextResponse.json(
-            { message: 'Address updated.', teacher: updatedTeacher },
+            { message: 'Address updated.', teacherAddress: updatedTeacher.address },
             { status: 200 }
         );
 

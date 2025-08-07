@@ -1,11 +1,35 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/src/lib/dbConnect';
 import Teacher from '@/src/model/teacher.model.js';
+import Admin from '@/src/model/admin.model.js';
 
 export async function DELETE(request) {
     await connectDB();
 
     try {
+
+           // Get cookie from request
+        const cookieHeader = request.headers.get('cookie') || '';
+        const tokenMatch = cookieHeader.match(/admin_session=([^;]+)/);
+        const sessionToken = tokenMatch ? tokenMatch[1] : null;
+
+        if (!sessionToken) {
+            return NextResponse.json(
+                { success: false, message: "Unauthorized: No session token found in cookies." },
+                { status: 401 }
+            );
+        }
+
+        // Find admin with this session token
+        const admin = await Admin.findOne({ 'sessions.token': sessionToken });
+
+        if (!admin) {
+            return NextResponse.json(
+                { success: false, message: "Unauthorized: Invalid session." },
+                { status: 401 }
+            );
+        }
+        
         const { password, teacherId } = await request.json();
 
         if (!password || !teacherId) {
