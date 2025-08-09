@@ -6,8 +6,8 @@ export async function POST(request) {
      await connectDB()
 
     try {
-        const { email, password, username } = await request.json();
-        if (!email || !password || !username) {
+        const { email, password } = await request.json();
+        if (!email || !password) {
             return NextResponse.json({
                 success: false,
                 message: "Please provide both email and password"
@@ -38,8 +38,8 @@ export async function POST(request) {
         student.refreshToken = refreshToken;
 
         await student.save();
-        
-        return NextResponse.json({
+
+        const response = NextResponse.json({
             success: true,
             message: "Login successful",
             student: {
@@ -48,6 +48,16 @@ export async function POST(request) {
                 username: student.username
             }
         }, { status: 200 });
+
+         response.cookies.set('student_session', refreshToken, {
+           httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            path: '/',
+            maxAge: 30 * 24 * 60 * 60, // 30 days
+         });
+
+         return response;
 
     } catch (error) {
         return NextResponse.json({

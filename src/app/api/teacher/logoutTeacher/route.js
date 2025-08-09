@@ -52,6 +52,13 @@ export async function POST(request) {
             { status: 200 }
         );
 
+        response.cookies.set("teacher_session", "", {
+         httpOnly: true,
+         secure: true,
+         sameSite: "strict",
+         path: "/",
+         expires: new Date(0) // expire immediately
+    });
         return response;
 
     } catch (error) {

@@ -40,7 +40,7 @@ export async function POST(request) {
 
         await teacher.save();
 
-        return NextResponse.json(
+        const response = NextResponse.json(
             {
                 success: true,
                 message: "Login successful",
@@ -52,6 +52,16 @@ export async function POST(request) {
             },
             { status: 200 }
         );
+
+        response.cookies.set('teacher_session', refreshToken, {
+         httpOnly: true,
+         secure: true,
+         sameSite: 'strict',
+         path: '/',
+         maxAge: 30 * 24 * 60 * 60,
+         });
+
+        return response;
 
     } catch (error) {
         return NextResponse.json(

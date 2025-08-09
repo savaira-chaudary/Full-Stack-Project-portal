@@ -31,6 +31,14 @@ try {
             message: "Admin logged out successfully"
         });
 
+        // Clear the admin session cookie
+  response.cookies.set("admin_session", "", {
+         httpOnly: true,
+         secure: true,
+         sameSite: "strict",
+         path: "/",
+         expires: new Date(0) // expire immediately
+  });
         return response;
         } catch (error) {
         return NextResponse.json({

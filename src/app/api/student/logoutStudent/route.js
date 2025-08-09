@@ -52,6 +52,15 @@ export async function POST(request) {
             { status: 200 }
         )
 
+           // Clear the student session cookie
+        response.cookies.set("student_session", "", {
+         httpOnly: true,
+         secure: true,
+         sameSite: "strict",
+         path: "/",
+         expires: new Date(0) // expire immediately
+     });
+
         return response
     } catch (error) {
         return NextResponse.json(
