@@ -50,9 +50,10 @@ export async function PATCH(request) {
         }
 
         const updatedStudent = await Student.findOneAndUpdate(
-            { address },
-            { new: true }
-        );
+    { rollno },                  // find by rollno
+    { address: address },        // set new address
+    { new: true }
+);
 
        return NextResponse.json(
     {

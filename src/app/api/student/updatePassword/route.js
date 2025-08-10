@@ -47,10 +47,10 @@ export async function PATCH(request) {
         }
 
         const updatedStudent = await Student.findOneAndUpdate(
-            student,
-            { password },
-            { new: true }
-        );
+    { rollno }, 
+    { password: password },
+    { new: true }
+);
 
         if (!updatedStudent) {
             return NextResponse.json(

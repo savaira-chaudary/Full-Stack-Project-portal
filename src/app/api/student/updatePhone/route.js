@@ -45,11 +45,11 @@ export async function PATCH(request) {
             }, { status: 401 });
         }
 
-        const updatedStudent = await Student.findOneAndUpdate(
-            student,
-            { phone },
-            { new: true }
-        );
+       const updatedStudent = await Student.findOneAndUpdate(
+    { rollno }, 
+    { phone: phone },
+    { new: true }
+);
 
         return NextResponse.json(
             { message: 'Phone updated.', updatedPhone: updatedStudent.phone },

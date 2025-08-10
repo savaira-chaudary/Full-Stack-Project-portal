@@ -46,10 +46,10 @@ export async function PATCH(request) {
         }
 
     const updatedStudent = await Student.findOneAndUpdate(
-      student,
-      { profilePicture },
-      { new: true }
-    );
+    { rollno }, 
+    { profilePicture: profilePicture },
+    { new: true }
+);
 
         return NextResponse.json(
             { success: true, message: 'Profile picture updated.', ProfileUpdated: updatedStudent.profilePicture },

@@ -46,12 +46,12 @@ export async function PATCH(request) {
                 message: "Student not found."
             }, { status: 404 });
         }
-
-         const updatedStudent = await Student.findOneAndUpdate(
-            { username },
-            { email},
-            { new: true }
-        )
+       
+        const updatedStudent = await Student.findOneAndUpdate(
+    { email },                               // find by current email
+    { username: username, email: email },   // update username and email
+    { new: true }
+        );
 
        return NextResponse.json(
             { success: true, message: "username and email updated successfully.", student: updatedStudent },
