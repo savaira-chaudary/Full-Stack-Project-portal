@@ -48,7 +48,7 @@ export async function PATCH(request) {
       
 
         const updatedTeacher = await Teacher.findOneAndUpdate(
-            teacher,
+            { teacherId },
              { profilePicture },
              { new: true }
            );

@@ -30,16 +30,16 @@ export async function PATCH(request) {
         }
 
         // get student username and email
-        const { email, username } = await request.json();
+        const { email, username, rollno} = await request.json();
 
-        if (!email || !username) {
+        if (!rollno) {
             return NextResponse.json({
                 success: false,
-                message: "Please provide both email and fullName"
+                message: "Please provide rollno"
             }, { status: 400 });
         }
 
-        const student = await Student.findOne({ email });
+        const student = await Student.findOne({ rollno });
          if (!student) {
             return NextResponse.json({
                 success: false,
@@ -48,7 +48,7 @@ export async function PATCH(request) {
         }
        
         const updatedStudent = await Student.findOneAndUpdate(
-    { email },                               // find by current email
+    { rollno },                               // find by current rollno
     { username: username, email: email },   // update username and email
     { new: true }
         );

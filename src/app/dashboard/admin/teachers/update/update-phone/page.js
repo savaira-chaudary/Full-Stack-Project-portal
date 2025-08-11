@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export default function UpdatePhonePage() {
-  const [rollno, setRollno] = useState("");
+  const [teacherId, setTeacherId] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
 
@@ -12,10 +12,10 @@ export default function UpdatePhonePage() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/student/updatePhone", {
+      const res = await fetch("/api/teacher/updatePhone", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rollno, phone}),
+        body: JSON.stringify({ teacherId, phone }),
       });
 
       const data = await res.json();
@@ -27,14 +27,14 @@ export default function UpdatePhonePage() {
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-      <h1 className="text-xl font-bold mb-4">Update Student Phone</h1>
+      <h1 className="text-xl font-bold mb-4">Update teacher Phone</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
-          placeholder="Roll No"
-          value={rollno}
-          onChange={(e) => setRollno(e.target.value)}
+          placeholder="Teacher Id"
+          value={teacherId}
+          onChange={(e) => setTeacherId(e.target.value)}
           className="w-full border rounded p-2"
           required
         />

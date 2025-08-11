@@ -29,10 +29,10 @@ export async function PATCH(request) {
                     );
                 }
          // get student details       
-        const { password, rollno , phone} = await request.json()
-        if (!password || !rollno || !phone) {
+        const {rollno , phone} = await request.json()
+        if (!rollno || !phone) {
             return NextResponse.json(
-                { message: "password and rollno and phone is required" },
+                { message: "rollno and phone is required" },
                 { status: 400 }
             )
         }

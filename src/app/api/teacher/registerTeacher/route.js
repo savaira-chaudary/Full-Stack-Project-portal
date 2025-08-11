@@ -1,6 +1,7 @@
 import Teacher from '@/src/model/teacher.model.js';
 import connectDB from '@/src/lib/dbConnect';
 import { NextResponse } from 'next/server';
+import Admin from '@/src/model/admin.model.js';
 
 export async function POST(request) {
     await connectDB();
@@ -30,7 +31,7 @@ export async function POST(request) {
 
         const { email, password, fullName, phone, address, subjectSpecialization, qualification , teacherId} = await request.json();
 
-        if (!email || !password || !fullName) {
+        if (!email || !password || !fullName || !phone || !address || !subjectSpecialization || !qualification || !teacherId) {
             return NextResponse.json(
                 { success: false, message: 'All fields are required.' },
                 { status: 400 }
@@ -52,7 +53,15 @@ export async function POST(request) {
             {
                 success: true,
                 message: 'Teacher registered successfully.',
-                data: { id: newTeacher._id, email, fullName ,phone,address,subjectSpecialization,qualification,teacherId}
+                data: { id: newTeacher._id, 
+                    email: newTeacher.email , 
+                    fullName: newTeacher.fullName ,
+                    phone: newTeacher.phone,
+                    address: newTeacher.address,
+                    subjectSpecialization: newTeacher.subjectSpecialization,
+                    qualification: newTeacher.qualification,
+                    teacherId: newTeacher.teacherId
+                }
             },
             { status: 201 }
         );

@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 export default function UpdateEmailNamePage() {
-  const [rollno, setRollno] = useState("");
+  const [teacherId, setTeacherId] = useState("");
   const [email, setNewEmail] = useState("");
   const [username, setNewUsername] = useState("");
   const [message, setMessage] = useState("");
@@ -12,11 +12,11 @@ export default function UpdateEmailNamePage() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/student/updateNameEmail", {
+      const res = await fetch("/api/teacher/updateNameEmail", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          rollno,
+          teacherId,
           email,
           username
         }),
@@ -33,11 +33,11 @@ export default function UpdateEmailNamePage() {
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
       <h1 className="text-xl font-bold mb-4">Update Email & Username</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-         <input
-          type="rollno"
-          placeholder="enter Rollno"
-          value={rollno}
-          onChange={(e) => setRollno(e.target.value)}
+        <input
+          type="teacherId"
+          placeholder="Teacher Id"
+          value={teacherId}
+          onChange={(e) => setTeacherId(e.target.value)}
           className="w-full border rounded p-2"
           required
         />

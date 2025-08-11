@@ -29,11 +29,11 @@ export async function PATCH(request) {
                     );
                 }
                 
-        const { password, teacherId , phone } = await request.json();
+        const {teacherId , phone } = await request.json();
 
-        if (!password || !teacherId) {
+        if (!teacherId) {
             return NextResponse.json(
-                { message: "Password and Id are required." },
+                { message: "Id are required." },
                 { status: 400 }
             );
         }
@@ -46,7 +46,7 @@ export async function PATCH(request) {
                 }
 
          const updatedTeacher = await Teacher.findOneAndUpdate(
-                    teacher,
+                    { teacherId},
                     { phone },
                     { new: true }
                 );

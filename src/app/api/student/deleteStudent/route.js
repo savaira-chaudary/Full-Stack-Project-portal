@@ -29,11 +29,11 @@ export async function DELETE(request) {
             );
         }
         
-        const { password ,rollno } = await request.json()
+        const { rollno } = await request.json()
 
-        if (!password || !rollno) {
+        if (!rollno) {
             return NextResponse.json(
-                { success: false, message: 'Password and rollno is required.' },
+                { success: false, message: 'rollno is required.' },
                 { status: 400 }
             )
         }

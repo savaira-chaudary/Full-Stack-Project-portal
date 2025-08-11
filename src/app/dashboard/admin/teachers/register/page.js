@@ -17,7 +17,7 @@ export default function RegisterTeacher() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const res = await fetch("/api/student/registerTeacher", {
+    const res = await fetch("/api/teacher/registerTeacher", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form)

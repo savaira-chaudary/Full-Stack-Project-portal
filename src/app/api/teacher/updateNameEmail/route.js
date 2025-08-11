@@ -30,17 +30,17 @@ export async function PATCH(request) {
                 }
                 
         const { email, fullName ,teacherId} = await request.json();
-        if (!email || !fullName) {
+        if (!teacherId) {
             return NextResponse.json({
                 success: false,
-                message: "Please provide both email and fullName"
+                message: "Please provide teacherId"
             }, { status: 400 });
         }
 
         const teacher = await Teacher.findOne({ teacherId });
 
         const updatedTeacher = await Teacher.findOneAndUpdate(
-                    teacher,
+                    { teacherId}, // find by teacher Id
                     { fullName },
                     { email},
                     { new: true }
@@ -52,8 +52,7 @@ export async function PATCH(request) {
                     );
                 }
 
-        teacher.fullName = fullName;
-        await teacher.save();
+        await updatedTeacher.save();
 
         return NextResponse.json({
             success: true,
