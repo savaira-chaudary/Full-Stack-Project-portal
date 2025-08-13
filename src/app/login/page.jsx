@@ -2,16 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student"); // default role
+  const [role, setRole] = useState("student");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  // ✅ Check if already logged in
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -31,7 +30,6 @@ export default function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -49,17 +47,20 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setError(data.message || "Invalid credentials");
+        toast.error(data.message || "Invalid credentials");
         setLoading(false);
         return;
       }
 
-      // ✅ Redirect based on role
-      if (role === "admin") router.push("/dashboard/admin");
-      else if (role === "teacher") router.push("/dashboard/teacher");
-      else if (role === "student") router.push("/dashboard/student");
+      toast.success("Login successful!");
+      setTimeout(() => {
+        if (role === "admin") router.push("/dashboard/admin");
+        else if (role === "teacher") router.push("/dashboard/teacher");
+        else router.push("/dashboard/student");
+      }, 1500);
+
     } catch (err) {
-      setError("Something went wrong");
+      toast.error("Something went wrong");
       setLoading(false);
     }
   };
@@ -71,12 +72,6 @@ export default function LoginPage() {
         className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm text-gray-600"
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-
-        {error && (
-          <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-sm">
-            {error}
-          </div>
-        )}
 
         {/* Role Selector */}
         <div className="mb-4">
@@ -128,3 +123,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
