@@ -36,8 +36,8 @@ gender:   {
  refreshToken: {
         type: String,
         // Stores the latest refresh token  (used for session management)
-    },
-    sessions: [
+},
+  sessions: [
         {
             token: { 
                 type: String, 
